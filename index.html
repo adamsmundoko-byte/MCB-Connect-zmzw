@@ -1,0 +1,300 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MCB Connect App</title><link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#ffeb00"><link rel="icon" href="./icon-192.png"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><script src="https://cdn.tailwindcss.com"></script><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:system-ui}.tab-active{background:#ffeb00;color:#000;font-weight:bold}.card{background:#111;border:1px solid #222;border-radius:12px;overflow:hidden;margin-bottom:12px}.card.gold{border-color:#ffeb00}.thumb{position:relative;width:100%;height:180px;background:#000;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center}.thumb img,.thumb video{width:100%;height:100%;object-fit:cover}.play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:50px;height:50px;background:rgba(0,0,0,0.7);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #ffeb00;z-index:2}.full{position:absolute;top:0;left:0;width:100%;height:100%;z-index:5}#splash{position:fixed;inset:0;background:#ffeb00;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999}#splash.hide{opacity:0;pointer-events:none;transition:opacity 0.5s}.hidden{display:none!important}</style></head><body class="pb-[80px]"><div id="splash"><img id="splashIcon" src="./icon-192.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2830/2830284.png'" style="width:90px;height:90px;border-radius:20px;margin-bottom:10px;background:#000"><h1 class="text-black font-black text-3xl">MCB Connect App</h1><p class="text-black text-xs mt-2 font-bold">Dollar Adams • Loading...</p><div class="w-10 h-10 border-4 border-black border-t-transparent rounded-full animate-spin mt-4"></div></div><div id="loginDiv" class="min-h-screen flex flex-col items-center justify-center p-6 bg-black"><h1 class="text-[#ffeb00] font-black text-3xl mb-1">MCB Connect App</h1><p class="text-gray-500 text-xs mb-6">Community Connect • 200MB Support</p><input id="ph" placeholder="Phone e.g 0773103823" class="w-full max-w-[320px] bg-[#111] border border-[#222] p-3 rounded-xl mb-2 text-white text-sm"><input id="nm" placeholder="Full Name (new users)" class="w-full max-w-[320px] bg-[#111] border border-[#222] p-3 rounded-xl mb-2 text-white text-sm"><input id="pwd" type="password" placeholder="Password" class="w-full max-w-[320px] bg-[#111] border border-[#222] p-3 rounded-xl mb-2 text-white text-sm"><input id="pwdConfirm" type="password" placeholder="Confirm Password (new users)" class="w-full max-w-[320px] bg-[#111] border border-[#222] p-3 rounded-xl mb-3 text-white text-sm"><button id="btnLogin" class="w-full max-w-[320px] bg-[#ffeb00] text-black font-black py-3 rounded-full text-sm">LOGIN / REGISTER</button><p id="status" class="text-[11px] text-gray-500 mt-3 text-center max-w-[320px]"></p><p class="text-[9px] text-gray-600 mt-3 text-center max-w-[320px]">Community connect platform - not a licensed bank. MESH community mining.</p><div class="flex gap-4 mt-4 text-[11px]"><button onclick="openForgotPassword()" class="text-[#ffeb00] underline">Forgot Password?</button><button onclick="requestUnblock()" class="text-orange-400 underline">Blocked? Request Unblock</button></div></div><div id="walletHeader" class="hidden bg-[#ffeb00] p-3 sticky top-0 z-40"><div class="flex justify-between items-center"><div class="flex gap-2 items-center"><img id="myProfilePic" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="w-10 h-10 rounded-full border-2 border-black object-cover"><div><p class="text-black font-black text-[11px]">Balance</p><p id="bal" class="text-black font-black text-lg">0 MESH</p></div></div><button onclick="openProfileSettings()" class="bg-black text-[#ffeb00] px-4 py-2 rounded-full text-[11px] font-bold"><i class="fa-solid fa-gear"></i> Profile</button></div><div class="flex gap-2 mt-3"><button id="btnBecomeSeller" class="flex-1 border border-black text-black py-2 rounded-full text-xs font-bold">Become Seller</button><button id="btnSellMesh" class="flex-1 bg-black text-[#ffeb00] py-2 rounded-full text-xs font-bold">Sell MESH</button></div></div>
+<div id="tabs" class="hidden">
+<div id="c-wallet" class="p-3">
+<div class="flex justify-between items-center mb-2"><p class="font-black text-xs">Wallet Content</p><button onclick="document.getElementById('walletAdminPost').classList.toggle('hidden')" class="text-[9px] text-gray-500">Post</button></div>
+<div id="walletAdminPost" class="hidden card p-3 mb-3 border-[#ffeb00]">
+<p class="text-[10px] font-bold text-[#ffeb00]">Admin Post to Wallet</p>
+<input id="walletTitle" placeholder="Title" class="w-full bg-[#222] p-2 rounded mt-2 text-xs">
+<textarea id="walletDesc" placeholder="Description" class="w-full bg-[#222] p-2 rounded mt-2 text-xs h-16"></textarea>
+<input id="walletUrl" placeholder="YouTube link or image URL (optional)" class="w-full bg-[#222] p-2 rounded mt-2 text-xs">
+<input id="walletFile" type="file" accept="image/*,video/*" class="w-full bg-[#222] p-2 rounded mt-2 text-[10px]">
+<p id="walletFileInfo" class="text-[9px] text-gray-500 mt-1"></p>
+<div class="flex gap-2 mt-2">
+<button onclick="postCat('wallet')" class="flex-1 bg-[#ffeb00] text-black py-2 rounded-full text-xs font-bold">Post to Wallet</button>
+<button onclick="startWalletCamera()" class="bg-[#333] text-white px-3 py-2 rounded-full text-xs"><i class="fa-solid fa-camera"></i></button>
+</div>
+<div id="walletCameraBox" class="hidden mt-2"><video id="walletCamera" autoplay playsinline class="w-full h-40 bg-black rounded"></video><button onclick="captureWalletCamera()" class="bg-[#ffeb00] text-black px-4 py-1 rounded-full text-xs mt-1">Capture</button></div>
+<p id="walletStatus" class="text-[10px] text-gray-500 mt-2"></p>
+</div>
+<div id="walletList"></div>
+</div>
+<div id="c-mining" class="hidden p-3">
+<div class="flex justify-between items-center mb-2"><p class="font-black text-xs">Mining - Earn 12 MESH per video</p></div>
+<div class="card p-3 mb-3"><input id="miningTitle" placeholder="Mining video title" class="w-full bg-[#222] p-2 rounded text-xs"><textarea id="miningDesc" placeholder="Desc" class="w-full bg-[#222] p-2 rounded mt-2 text-xs h-12"></textarea><input id="miningUrl" placeholder="YouTube link" class="w-full bg-[#222] p-2 rounded mt-2 text-xs"><input id="miningFile" type="file" accept="image/*,video/*" class="w-full bg-[#222] p-2 rounded mt-2 text-[10px]"><p id="miningFileInfo" class="text-[9px] text-gray-500 mt-1"></p><button onclick="postCat('mining')" class="w-full bg-[#ffeb00] text-black py-2 rounded-full text-xs font-bold mt-2">Post Mining (200MB ok)</button><p id="miningStatus" class="text-[10px] text-gray-500 mt-1"></p></div>
+<div id="miningList"></div>
+</div>
+<div id="c-viral" class="hidden p-3"><p class="font-black text-xs mb-2">Viral</p><div class="card p-3 mb-3"><input id="viralTitle" placeholder="Title" class="w-full bg-[#222] p-2 rounded text-xs"><input id="viralUrl" placeholder="YouTube / URL" class="w-full bg-[#222] p-2 rounded mt-2 text-xs"><input id="viralFile" type="file" accept="image/*,video/*" class="w-full bg-[#222] p-2 rounded mt-2 text-[10px]"><p id="viralFileInfo" class="text-[9px] text-gray-500 mt-1"></p><button onclick="postCat('viral')" class="w-full bg-[#ffeb00] text-black py-2 rounded-full text-xs font-bold mt-2">Post Viral</button><p id="viralStatus" class="text-[10px] text-gray-500 mt-1"></p></div><div id="viralList"></div></div>
+<div id="c-market" class="hidden p-3"><p class="font-black text-xs mb-2">Market</p><div class="card p-3 mb-3"><input id="marketTitle" placeholder="Product title" class="w-full bg-[#222] p-2 rounded text-xs"><input id="marketUrl" placeholder="Image URL" class="w-full bg-[#222] p-2 rounded mt-2 text-xs"><input id="marketFile" type="file" accept="image/*" class="w-full bg-[#222] p-2 rounded mt-2 text-[10px]"><p id="marketFileInfo" class="text-[9px] text-gray-500 mt-1"></p><button onclick="postCat('market')" class="w-full bg-[#ffeb00] text-black py-2 rounded-full text-xs font-bold mt-2">Post Market</button><p id="marketStatus" class="text-[10px] text-gray-500 mt-1"></p></div><div id="marketList"></div></div>
+<div id="c-news" class="hidden p-3"><p class="font-black text-xs mb-2">News</p><div id="newsList"></div></div>
+<div id="c-social" class="hidden p-3"><p class="font-black text-xs mb-2">Social</p><div id="socialList"></div></div>
+<div id="c-follow" class="hidden p-3"><div class="flex justify-between items-center mb-2"><p class="font-black text-xs">Follow Users</p><p id="followSyncStatus" class="text-[9px] text-gray-500"></p></div><div id="followList"></div></div>
+<div id="c-sell" class="hidden p-3">
+<div class="card p-3 mb-3"><p class="font-bold text-xs">Sell MESH</p><input id="buyerPhone" placeholder="Buyer phone" class="w-full bg-[#222] p-2 rounded mt-2 text-xs"><input id="sellAmount" type="number" placeholder="Amount MESH" class="w-full bg-[#222] p-2 rounded mt-2 text-xs"><button id="btnDoSell" class="w-full bg-[#ffeb00] text-black py-2 rounded-full text-xs font-bold mt-2">Send Sell Request</button><p id="sellStatus" class="text-[10px] text-gray-500 mt-2"></p></div>
+<div id="approvedSellersView" class="mb-3"></div><div id="txHistory"></div>
+</div>
+<div id="c-admin" class="hidden p-3">
+<div class="card p-3 mb-3 bg-[#111] border border-[#222]"><p class="font-bold text-xs">Admin Unlock - Password Invisible</p><div class="flex gap-2 mt-2"><input id="apass" type="password" placeholder="Admin Password" class="flex-1 bg-[#222] p-2 rounded text-xs text-white"><button onclick="toggleAdminPass()" class="bg-[#333] px-3 rounded text-xs">👁️</button><button id="btnUnlock" class="bg-[#ffeb00] text-black px-4 rounded-full text-xs font-bold">Unlock</button></div><p class="text-[8px] text-gray-600 mt-1">Password is hidden • type invisible</p></div>
+<div id="ac" class="mt-2"></div>
+</div>
+</div>
+<div id="profileSettingsModal" class="hidden fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4"><div class="bg-[#111] w-full max-w-[320px] p-4 rounded-xl border border-[#222]"><p class="font-bold text-xs mb-2">Profile Settings</p><img id="profilePreview" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" class="w-20 h-20 rounded-full mx-auto mb-2 object-cover"><input id="profileName" placeholder="Name" class="w-full bg-[#222] p-2 rounded text-xs mb-2"><input id="profileUrl" placeholder="Photo URL / YouTube" class="w-full bg-[#222] p-2 rounded text-xs mb-2"><input id="profileFile" type="file" accept="image/*" class="w-full bg-[#222] p-2 rounded text-[10px] mb-2"><p id="profileInfo" class="text-[9px] text-gray-500 mb-2"></p><div class="flex gap-2"><button onclick="saveMyProfile()" class="flex-1 bg-[#ffeb00] text-black py-2 rounded-full text-xs font-bold">Save</button><button onclick="document.getElementById('profileSettingsModal').classList.add('hidden')" class="flex-1 bg-[#333] text-white py-2 rounded-full text-xs">Close</button></div></div></div>
+<div id="editPostModal" class="hidden fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4"><div class="bg-[#111] w-full max-w-[320px] p-4 rounded-xl border border-[#222]"><p class="font-bold text-xs mb-2">Edit Post</p><input id="editTitle" class="w-full bg-[#222] p-2 rounded text-xs mb-2"><textarea id="editDesc" class="w-full bg-[#222] p-2 rounded text-xs h-20 mb-2"></textarea><input id="editUrl" placeholder="New YouTube / URL" class="w-full bg-[#222] p-2 rounded text-xs mb-2"><div class="flex gap-2"><button onclick="saveEditPost()" class="flex-1 bg-[#ffeb00] text-black py-2 rounded-full text-xs font-bold">Save Edit</button><button onclick="document.getElementById('editPostModal').classList.add('hidden')" class="flex-1 bg-[#333] text-white py-2 rounded-full text-xs">Cancel</button></div></div></div>
+<div id="forgotModal" class="hidden fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4"><div class="bg-[#111] w-full max-w-[320px] p-4 rounded-xl border"><p class="font-bold text-xs mb-2">Forgot Password</p><input id="forgotPhone" placeholder="Phone" class="w-full bg-[#222] p-2 rounded text-xs mb-2"><input id="forgotNewPass" type="password" placeholder="New Password" class="w-full bg-[#222] p-2 rounded text-xs mb-2"><input id="forgotConfirmPass" type="password" placeholder="Confirm New" class="w-full bg-[#222] p-2 rounded text-xs mb-2"><p id="forgotStatus" class="text-[9px] text-gray-500 mb-2"></p><div class="flex gap-2"><button onclick="doForgotPassword()" class="flex-1 bg-[#ffeb00] text-black py-2 rounded-full text-xs font-bold">Reset</button><button onclick="document.getElementById('forgotModal').classList.add('hidden')" class="flex-1 bg-[#333] text-white py-2 rounded-full text-xs">Close</button></div></div></div>
+<script>
+// EMERGENCY: Force splash hide after 2.5 sec - fixes blank wallet
+setTimeout(function(){ var s=document.getElementById('splash'); if(s){s.classList.add('hide'); setTimeout(function(){s.style.display='none';},600);} },2500);
+window.addEventListener('error', function(){ var s=document.getElementById('splash'); if(s){s.classList.add('hide');} });
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, increment, arrayUnion, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+const firebaseConfig={apiKey:"AIzaSyA2lDus4I5R8FkyxW3Gx7r2ikI5Qv-5k4o",authDomain:"mcb-cloud-38313.firebaseapp.com",projectId:"mcb-cloud-38313",storageBucket:"mcb-cloud-38313.firebasestorage.app",messagingSenderId:"1000660970649",appId:"1:1000660970649:web:e9a0f7a0b0c0d0e0f0a0b"};
+const app=initializeApp(firebaseConfig); const db=getFirestore(app); const storage=getStorage(app);
+const LS=localStorage; const getLS=(k,d)=>{try{return JSON.parse(LS.getItem(k))??d;}catch{return d;}}; const setLS=(k,v)=>LS.setItem(k,JSON.stringify(v));
+let cur=getLS('mesh_current',null); let curPhone=cur?.phone||null; let BAL=cur?.balance||0;
+const ADMIN_PHONES=["0773103823","263773103823"]; const isAdminPhone=()=>ADMIN_PHONES.includes(curPhone);
+const loadUsers=()=>getLS('mesh_users',[]); const saveUsers=(u)=>setLS('mesh_users',u);
+const loadMined=()=>getLS('mesh_mined',[]); const saveMined=(m)=>setLS('mesh_mined',m);
+const loadViewed=()=>getLS('mesh_viewed',[]); const saveViewed=(v)=>setLS('mesh_viewed',v);
+const loadSellers=()=>getLS('mesh_sellers',[]); const saveSellers=(s)=>setLS('mesh_sellers',s);
+const loadTx=()=>getLS('mesh_tx',[]); const saveTx=(t)=>setLS('mesh_tx',t);
+const loadFollowedUsers=()=>getLS('mesh_followed_users',[]); const saveFollowedUsers=(f)=>setLS('mesh_followed_users',f);
+const loadUserStats=()=>getLS('mesh_user_stats',{}); const saveUserStats=(s)=>setLS('mesh_user_stats',s);
+const loadProfiles=()=>getLS('mesh_profiles',{}); const saveProfiles=(p)=>setLS('mesh_profiles',p);
+const loadBlocked=()=>getLS('mesh_blocked',[]); const saveBlocked=(b)=>setLS('mesh_blocked',b);
+let myProfileFile=null; let editContext={cat:null,id:null}; let isAdminUnlocked=false;
+const canMineGlobal=(ph)=>{const md=loadMined().filter(m=>m.phone===ph); if(md.length===0)return{can:true}; const last=Math.max(...md.map(m=>m.time)); const diff=Date.now()-last; const hours=24-diff/(1000*60*60); if(hours>0)return{can:false,hours:hours.toFixed(1)}; return{can:true};};
+const recordView=(ph,cat,id)=>{let v=loadViewed(); v=v.filter(x=>!(x.phone===ph&&x.cat===cat&&x.id===id)); v.push({phone:ph,cat,id,time:Date.now()}); saveViewed(v);};
+window.refreshWallet=()=>{try{document.getElementById('bal').innerText=(BAL||0).toLocaleString()+' MESH';}catch(e){}};
+const ytId=(u)=>{if(!u)return null; try{const url=new URL(u); let v=url.searchParams.get('v'); if(v)return v;}catch(e){} const m=u.match(/(?:youtu\.be\/|(?:www\.|m\.|music\.)?youtube\.com\/(?:watch\?v=|embed\/|shorts\/|v\/|watch\?.*v=))([^&\?\/\s]+)/); if(!m)return null; return m[1];};
+let files={}; let cameraFiles={}; window.vidCache={};
+// PASSWORD INVISIBLE - stays type=password unless eye clicked
+window.toggleAdminPass=()=>{const el=document.getElementById('apass'); el.type=el.type==='password'?'text':'password';};
+window.updateAdminUI=()=>{ const isAdmin=isAdminPhone(); const wp=document.getElementById('walletAdminPost'); if(wp){ if(isAdmin)wp.classList.remove('hidden'); else wp.classList.add('hidden'); } };
+window.openProfileSettings=()=>{ const modal=document.getElementById('profileSettingsModal'); modal.classList.remove('hidden'); const profiles=loadProfiles(); const my=profiles[curPhone]||{}; document.getElementById('profileName').value=my.name||cur?.name||''; document.getElementById('profileUrl').value=my.url||''; document.getElementById('profilePreview').src=my.photo||'https://cdn-icons-png.flaticon.com/512/149/149071.png'; document.getElementById('profileInfo').innerText=my.photo?'Current photo loaded':'No photo yet'; };
+window.saveMyProfile=async()=>{ const name=document.getElementById('profileName').value.trim()||cur?.name||''; const url=document.getElementById('profileUrl').value.trim(); let photo=null; const profiles=loadProfiles(); const existing=profiles[curPhone]||{}; if(myProfileFile){ const f=myProfileFile; if(f.size>200*1024*1024){alert('Max 200MB');return;} try{const r=sRef(storage,'profiles/'+curPhone+'_'+Date.now()); const snap=await uploadBytes(r,f); photo=await getDownloadURL(snap.ref);}catch(e){photo=await new Promise((res,rej)=>{const reader=new FileReader(); reader.onload=e=>res(e.target.result); reader.onerror=rej; reader.readAsDataURL(f);});}} else if(url){ if(url.includes('youtube.com')||url.includes('youtu.be')){ const yid=ytId(url); if(yid) photo='https://img.youtube.com/vi/'+yid+'/mqdefault.jpg'; else photo=url; } else { photo=url; } } else { photo=existing.photo||null; } if(!photo){alert('Add photo');return;} profiles[curPhone]={...existing, photo:photo,url:url||photo,name:name,phone:curPhone,time:Date.now()}; saveProfiles(profiles); document.getElementById('profilePreview').src=photo; const hp=document.getElementById('myProfilePic'); if(hp)hp.src=photo; try{ await setDoc(doc(db,'users',curPhone),{profilePhoto:photo,profileName:name},{merge:true}); }catch(e){} let users=loadUsers(); for(let k=0;k<users.length;k++){if(users[k].phone===curPhone){users[k].name=name; users[k].profilePhoto=photo; break;}} saveUsers(users); if(cur){cur.name=name; cur.profilePhoto=photo; setLS('mesh_current',cur);} document.getElementById('profileInfo').innerText='Profile saved'; alert('Profile saved'); loadFollowPage(); };
+window.editPost=async(cat,id)=>{ const ref=doc(db,cat,id); const snap=await getDoc(ref); if(!snap.exists()){alert('Post not found');return;} const data=snap.data(); if(data.authorPhone!==curPhone && !isAdminPhone()){alert('Only your post or Admin');return;} editContext={cat,id}; document.getElementById('editTitle').value=data.title||''; document.getElementById('editDesc').value=data.desc||''; document.getElementById('editUrl').value=data.videoUrl?.startsWith('http') && !data.videoUrl.startsWith('data:') ? data.videoUrl : (data.youtubeId ? 'https://youtu.be/'+data.youtubeId : ''); document.getElementById('editPostModal').classList.remove('hidden'); };
+window.saveEditPost=async()=>{ const {cat,id}=editContext; if(!cat||!id)return; const newTitle=document.getElementById('editTitle').value.trim(); const newDesc=document.getElementById('editDesc').value.trim(); const newUrl=document.getElementById('editUrl').value.trim(); if(!newTitle){alert('Title needed');return;} try{ const updates={title:newTitle,desc:newDesc}; if(newUrl){ const y=ytId(newUrl); if(y){updates.youtubeId=y; updates.videoUrl=newUrl; updates.fileType='youtube';} else {updates.videoUrl=newUrl; updates.fileType=newUrl.startsWith('data:')?'image':'url'; updates.youtubeId=null;} } await updateDoc(doc(db,cat,id),updates); document.getElementById('editPostModal').classList.add('hidden'); alert('Post edited'); }catch(e){alert(e.message);} };
+window.deletePost=async(cat,id)=>{ if(!confirm('Delete?'))return; try{ const ref=doc(db,cat,id); const snap=await getDoc(ref); if(!snap.exists()){alert('Not found');return;} const data=snap.data(); if(data.authorPhone!==curPhone && !isAdminPhone()){alert('Only your post or Admin');return;} await deleteDoc(ref); alert('Deleted'); }catch(e){alert(e.message);} };
+window.blockUser=async(phone)=>{ if(!isAdminPhone()){alert('Admin only');return;} if(!confirm('Block '+phone+' ?'))return; let blocked=loadBlocked(); if(!blocked.includes(phone)){blocked.push(phone); saveBlocked(blocked);} let users=loadUsers(); users=users.filter(u=>u.phone!==phone); saveUsers(users); try{ await setDoc(doc(db,'users',phone),{blocked:true},{merge:true}); }catch(e){} alert('Blocked'); loadFollowPage(); };
+window.unblockUser=async(phone)=>{ let blocked=loadBlocked(); blocked=blocked.filter(p=>p!==phone); saveBlocked(blocked); try{ await setDoc(doc(db,'users',phone),{blocked:false},{merge:true}); }catch(e){} alert('Unblocked '+phone); loadFollowPage(); };
+window.playThis=(elDiv,yId,vUrlRaw,fType,vidKey)=>{
+ try{
+  const c=elDiv;
+  const existing=c.querySelector('.full'); if(existing){existing.remove(); const pl=c.querySelector('.play'); if(pl)pl.style.display='flex'; return;}
+  const playIcon=c.querySelector('.play'); if(playIcon)playIcon.style.display='none';
+  let vUrl=""; if(vidKey&&window.vidCache[vidKey]){vUrl=window.vidCache[vidKey];} else {vUrl=c.dataset.vurl||vUrlRaw||""; try{vUrl=decodeURIComponent(vUrl);}catch(e){}}
+  let cleanY=(yId&&yId!=="null"&&yId!=="")?yId:ytId(vUrl);
+  if(cleanY){c.insertAdjacentHTML('beforeend','<iframe class="full" src="https://www.youtube.com/embed/'+cleanY+'?autoplay=1&playsinline=1&rel=0" frameborder="0" allowfullscreen></iframe>');}
+  else if(vUrl){ if(vUrl.startsWith('data:image')||fType.includes('image')) c.insertAdjacentHTML('beforeend','<img class="full" src="'+vUrl+'" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:5">'); else c.insertAdjacentHTML('beforeend','<video class="full" src="'+vUrl+'" controls autoplay playsinline style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:5"></video>'); }
+ }catch(e){console.log(e);}
+};
+const compressImage=(file,maxKB=650)=>new Promise((res)=>{ if(!file.type.includes('image')){ res(null); return; } const reader=new FileReader(); reader.onload=e=>{ const img=new Image(); img.onload=()=>{ const canvas=document.createElement('canvas'); let w=img.width; let h=img.height; const maxDim=1024; if(w>maxDim||h>maxDim){ if(w>h){h=h*maxDim/w; w=maxDim;} else {w=w*maxDim/h; h=maxDim;} } canvas.width=w; canvas.height=h; canvas.getContext('2d').drawImage(img,0,0,w,h); let quality=0.7; let dataUrl=canvas.toDataURL('image/jpeg',quality); while(dataUrl.length>maxKB*1.4*1024 && quality>0.1){ quality-=0.1; dataUrl=canvas.toDataURL('image/jpeg',quality); } res(dataUrl); }; img.onerror=()=>res(null); img.src=e.target.result; }; reader.onerror=()=>res(null); reader.readAsDataURL(file); });
+document.getElementById('profileFile')?.addEventListener('change',e=>{const f=e.target.files[0]; if(!f)return; if(f.size>200*1024*1024){alert('Max 200MB');return;} myProfileFile=f; document.getElementById('profileInfo').innerText='Gallery: '+f.name+' ('+(f.size/1024/1024).toFixed(1)+'MB)';});
+['wallet','mining','viral','market'].forEach(cat=>{
+  const el=document.getElementById(cat+'File'); 
+  if(el){el.addEventListener('change',e=>{
+    const f=e.target.files[0]; if(!f)return;
+    if(f.size>200*1024*1024){alert('Max 200MB'); e.target.value=''; return;}
+    files[cat]=f;
+    const info=document.getElementById(cat+'FileInfo')||document.getElementById(cat+'Info')||document.getElementById(cat+'Status');
+    if(info)info.innerText='Ready: '+f.name+' ('+(f.size/1024/1024).toFixed(2)+'MB) - click Post';
+  });}
+});
+async function uploadToGofile(file, infoEl){
+  try{
+    if(infoEl) infoEl.innerText='Uploading to Catbox (Zim OK)...';
+    const fd=new FormData(); fd.append('reqtype','fileupload'); fd.append('fileToUpload',file);
+    const url=await new Promise((resolve,reject)=>{
+      const xhr=new XMLHttpRequest();
+      xhr.open('POST','https://catbox.moe/user/api.php');
+      xhr.upload.onprogress=(e)=>{ if(e.lengthComputable && infoEl){ const pct=Math.round(e.loaded/e.total*100); infoEl.innerText='Uploading video '+pct+'% - '+(e.loaded/1024/1024).toFixed(1)+'MB / '+(e.total/1024/1024).toFixed(1)+'MB'; } };
+      xhr.onload=()=>{ const txt=xhr.responseText.trim(); if(txt.startsWith('https://')) resolve(txt); else reject(new Error(txt.slice(0,120))); };
+      xhr.onerror=()=>reject(new Error('Catbox blocked'));
+      xhr.send(fd);
+    });
+    if(infoEl) infoEl.innerText='Catbox OK - Posting...';
+    return url;
+  }catch(e1){
+    if(file.size < 12*1024*1024){
+      if(infoEl) infoEl.innerText='Saving directly (<12MB) - always works...';
+      return await new Promise((res,rej)=>{ const r=new FileReader(); r.onload=ev=>res(ev.target.result); r.onerror=rej; r.readAsDataURL(file); });
+    } else {
+      throw new Error('Use video <12MB or YouTube link - clouds blocked in Zim. '+e1.message);
+    }
+  }
+}
+window.postCat=async(cat)=>{
+  if((cat==='mining'||cat==='wallet')&&!isAdminPhone()){alert('Only Admin can post '+cat);return;}
+  const titleEl=document.getElementById(cat+'Title'); const t=titleEl?titleEl.value.trim():""; if(!t){alert('Title needed');return;}
+  if(!cur){alert('Login first');return;} if(cur.balance<100){alert('Need 100 MESH');return;}
+  const descEl=document.getElementById(cat+'Desc'); const d=descEl?descEl.value.trim():"";
+  const urlEl=document.getElementById(cat+'Url'); const u=urlEl?urlEl.value.trim():"";
+  let file=files[cat]||null; const y=ytId(u);
+  let vUrl=u||null; if(y){vUrl=u; file=null;} if(!vUrl&&!file){alert('Add YouTube or media');return;}
+  const info=document.getElementById(cat+'Status')||document.getElementById(cat+'FileInfo')||document.getElementById(cat+'Info');
+  try{
+    if(info)info.innerText='Starting...';
+    if(file&&!y){
+      if(file.type?.includes('image')){
+        const comp=await compressImage(file,600);
+        if(comp && comp.length < 900*1024){ vUrl=comp; }
+        else { if(info)info.innerText='Uploading image...'; vUrl=await uploadToGofile(file, info); }
+      } else {
+        if(file.size>200*1024*1024){alert('Max 200MB');return;}
+        vUrl=await uploadToGofile(file, info);
+      }
+    }
+    if(info)info.innerText='Saving post...';
+    const docData={title:t,desc:d,videoUrl:vUrl,youtubeId:y||null,fileType:file? (file.type||'image/jpeg') : (y?'youtube':'url'),reward:12,author:cur.name,authorPhone:cur.phone,likes:0,views:0,followers:0,comments:0,shares:0,likedBy:[],followedBy:[],commentList:[],created:serverTimestamp()};
+    await addDoc(collection(db,cat),docData);
+    const us=loadUsers(); for(let k=0;k<us.length;k++){if(us[k].phone===curPhone){us[k].balance-=100; cur.balance=us[k].balance; break;}} saveUsers(us); setLS('mesh_current',cur); BAL-=100; await setDoc(doc(db,'users',curPhone),{balance:BAL},{merge:true}); refreshWallet();
+    if(titleEl)titleEl.value=''; if(descEl)descEl.value=''; if(urlEl)urlEl.value=''; files[cat]=null;
+    const f1=document.getElementById(cat+'File'); if(f1) f1.value='';
+    if(info)info.innerText='Posted! Video works for all';
+    alert('Posted!');
+  }catch(e){ alert('Upload failed: '+e.message); if(info)info.innerText='Failed: '+e.message; }
+};
+window.render=(cat,listId)=>{
+  try{
+    const el=document.getElementById(listId); if(!el)return;
+    onSnapshot(collection(db,cat),snap=>{
+      let html='';
+      const docs=[];
+      snap.forEach(d=>{ docs.push({id:d.id,data:d.data()}); });
+      docs.reverse().forEach(({id,data})=>{
+        const y=data.youtubeId||ytId(data.videoUrl||'');
+        const vRaw=data.videoUrl||'';
+        const isImg=vRaw.startsWith('data:image')||data.fileType?.includes('image');
+        const thumbStyle=isImg?'':'background:#000';
+        const thumbContent=y?'<img src="https://img.youtube.com/vi/'+y+'/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover"><div class="play"><i class="fa-solid fa-play text-[#ffeb00]"></i></div>' : (vRaw? (isImg? '<img src="'+vRaw+'" style="width:100%;height:100%;object-fit:cover">' : '<video src="'+vRaw+'" style="width:100%;height:100%;object-fit:cover" muted></video><div class="play"><i class="fa-solid fa-play text-[#ffeb00]"></i></div>') : '<div class="text-[10px] text-gray-500">No media</div>');
+        const vidKey=cat+'_'+id; if(vRaw) window.vidCache[vidKey]=vRaw;
+        const isOwner=data.authorPhone===curPhone; const canEdit=isOwner||isAdminPhone();
+        html+='<div class="card"><div class="thumb" style="'+thumbStyle+'" data-vurl="'+encodeURIComponent(vRaw||'')+'" onclick="playThis(this,\''+(y||'')+'\',null,\''+(data.fileType||'')+'\',\''+vidKey+'\')">'+thumbContent+'</div><div class="p-2"><p class="font-bold text-xs">'+(data.title||'')+'</p><p class="text-[10px] text-gray-400 mt-1">'+(data.desc||'')+'</p><div class="flex gap-2 mt-2 flex-wrap"><button onclick="mine(\''+cat+'\',\''+id+'\','+(data.reward||12)+')" class="bg-[#ffeb00] text-black px-3 py-1 rounded-full text-[10px] font-bold">Mine '+(data.reward||12)+' MESH</button><button onclick="followPost(\''+cat+'\',\''+id+'\')" class="bg-[#222] text-white px-3 py-1 rounded-full text-[10px]">Follow</button><button onclick="likePost(\''+cat+'\',\''+id+'\')" class="bg-[#222] text-white px-2 py-1 rounded-full text-[10px]">Like '+(data.likes||0)+'</button>'+(canEdit?'<button onclick="editPost(\''+cat+'\',\''+id+'\')" class="bg-blue-900/50 text-blue-300 px-2 py-1 rounded-full text-[9px]">Edit</button><button onclick="deletePost(\''+cat+'\',\''+id+'\')" class="bg-red-900/50 text-red-300 px-2 py-1 rounded-full text-[9px]">Delete</button>':'')+'</div><p class="text-[8px] text-gray-600 mt-1">'+(data.author||'')+' '+(data.authorPhone||'')+'</p></div></div>';
+      });
+      el.innerHTML=html||'<p class="text-[10px] text-gray-500">No posts yet - Admin post some</p>';
+    });
+  }catch(e){ console.log(e); }
+};
+window.loadWallet=()=>{
+  try{
+    const el=document.getElementById('walletList'); if(!el)return;
+    onSnapshot(collection(db,'wallet'),snap=>{
+      if(snap.empty){ el.innerHTML='<div class="card p-3"><p class="font-bold text-xs">Welcome to MCB Wallet</p><div class="thumb mt-2" onclick="playThis(this,\'dQw4w9WgXcQ\')"><img src="https://img.youtube.com/vi/dQw4w9WgXcQ/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover"><div class="play"><i class="fa-solid fa-play text-[#ffeb00]"></i></div></div><p class="text-[10px] text-gray-400 mt-2">Default video - Admin can post more</p></div>'; return;}
+      let html=''; snap.forEach(d=>{ const data=d.data(); const y=data.youtubeId||ytId(data.videoUrl||''); const vRaw=data.videoUrl||''; const vidKey='wallet_'+d.id; if(vRaw) window.vidCache[vidKey]=vRaw; const thumbContent=y?'<img src="https://img.youtube.com/vi/'+y+'/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover"><div class="play"><i class="fa-solid fa-play text-[#ffeb00]"></i></div>' : (vRaw? (vRaw.startsWith('data:image')?'<img src="'+vRaw+'" style="width:100%;height:100%;object-fit:cover">':'<video src="'+vRaw+'" style="width:100%;height:100%;object-fit:cover" muted></video><div class="play"><i class="fa-solid fa-play text-[#ffeb00]"></i></div>'):''); const isOwner=data.authorPhone===curPhone; html+='<div class="card"><div class="thumb" data-vurl="'+encodeURIComponent(vRaw||'')+'" onclick="playThis(this,\''+(y||'')+'\',null,\''+(data.fileType||'')+'\',\''+vidKey+'\')">'+thumbContent+'</div><div class="p-2"><p class="font-bold text-xs">'+(data.title||'Wallet Video')+'</p><p class="text-[10px] text-gray-400">'+(data.desc||'')+'</p><div class="flex gap-2 mt-2"><button onclick="mine(\'wallet\',\''+d.id+'\','+(data.reward||12)+')" class="bg-[#ffeb00] text-black px-3 py-1 rounded-full text-[10px] font-bold">Mine '+(data.reward||12)+'</button>'+(isOwner||isAdminPhone()?'<button onclick="editPost(\'wallet\',\''+d.id+'\')" class="bg-[#222] px-2 py-1 rounded-full text-[9px]">Edit</button><button onclick="deletePost(\'wallet\',\''+d.id+'\')" class="bg-red-900/50 text-red-300 px-2 py-1 rounded-full text-[9px]">Del</button>':'')+'</div></div></div>'; });
+      el.innerHTML=html;
+    });
+  }catch(e){ console.log(e); }
+};
+window.mine=(cat,id,rw)=>{ const can=canMineGlobal(curPhone); if(!can.can){alert('Mining limit: wait '+can.hours+'h');return;} const viewed=loadViewed(); const already=viewed.find(v=>v.phone===curPhone && v.cat===cat && v.id===id); if(already){alert('Already mined');return;} BAL+=rw||12; refreshWallet(); let us=loadUsers(); for(let k=0;k<us.length;k++){if(us[k].phone===curPhone){us[k].balance=BAL; break;}} saveUsers(us); setLS('mesh_current',{...cur,balance:BAL}); setDoc(doc(db,'users',curPhone),{balance:BAL},{merge:true}); let mined=loadMined(); mined.push({phone:curPhone,cat,id,time:Date.now()}); saveMined(mined); recordView(curPhone,cat,id); alert('Mined '+(rw||12)+' MESH'); };
+window.likePost=async(cat,id)=>{ try{ const ref=doc(db,cat,id); await updateDoc(ref,{likes:increment(1),likedBy:arrayUnion(curPhone)}).catch(async()=>{ const snap=await getDoc(ref); if(snap.exists()) await updateDoc(ref,{likes:(snap.data().likes||0)+1});}); }catch(e){} };
+window.followPost=async(cat,id)=>{ try{ const ref=doc(db,cat,id); const snap=await getDoc(ref); if(!snap.exists()){alert('Post not found');return;} const phone=snap.data().authorPhone; if(!phone||phone===curPhone){alert('Cannot follow self');return;} let f=loadFollowedUsers(); if(f.includes(phone)){alert('Already following');return;} f.push(phone); saveFollowedUsers(f); await updateDoc(ref,{followers:increment(1),followedBy:arrayUnion(curPhone)}).catch(()=>{}); alert('Followed'); loadFollowPage(); }catch(e){alert(e.message);} };
+window.loadFollowPage=async()=>{
+  const blocked=loadBlocked(); let profiles=loadProfiles(); const stats=loadUserStats(); let users=loadUsers();
+  const ADMIN_PHONE='0773103823';
+  if(!profiles[ADMIN_PHONE]) profiles[ADMIN_PHONE]={};
+  if(!profiles[ADMIN_PHONE].followers || profiles[ADMIN_PHONE].followers < 1000){
+    profiles[ADMIN_PHONE].likes=2429; profiles[ADMIN_PHONE].views=37395; profiles[ADMIN_PHONE].comments=1287; profiles[ADMIN_PHONE].shares=6113; profiles[ADMIN_PHONE].follows=5623; profiles[ADMIN_PHONE].followers=5623; profiles[ADMIN_PHONE].name='Dollar Adams'; profiles[ADMIN_PHONE].isAdmin=true; saveProfiles(profiles);
+  }
+  try{ const remoteSnap=await getDocs(collection(db,'users')); remoteSnap.forEach(d=>{ const data=d.data(); const ph=data.phone||d.id; if(!ph||blocked.includes(ph)) return; if(!users.find(u=>u.phone===ph)){ users.push({phone:ph,name:data.name||ph,balance:data.balance||0}); } if(data.profilePhoto && !profiles[ph]?.photo){ if(!profiles[ph]) profiles[ph]={}; profiles[ph].photo=data.profilePhoto; profiles[ph].name=data.name||ph; } }); saveUsers(users); saveProfiles(profiles); }catch(e){}
+  let combined={}; users.forEach(u=>{ if(!u.phone||blocked.includes(u.phone)) return; combined[u.phone]={name:u.name||u.phone,phone:u.phone,profile:profiles[u.phone]||null,stats:stats[u.phone]||{likes:0,views:0,followers:0,comments:0,shares:0}}; });
+  Object.keys(profiles).forEach(ph=>{ if(blocked.includes(ph)) return; if(!combined[ph]){ combined[ph]={name:profiles[ph].name||ph,phone:ph,profile:profiles[ph],stats:stats[ph]||{likes:profiles[ph].likes||0,views:profiles[ph].views||0,followers:profiles[ph].followers||0,comments:profiles[ph].comments||0,shares:profiles[ph].shares||0}}; } else { combined[ph].profile=profiles[ph]; } });
+  let list=Object.values(combined); list.sort((a,b)=>{ if(a.phone===ADMIN_PHONE) return -1; if(b.phone===ADMIN_PHONE) return 1; return (b.profile?.followers||0)-(a.profile?.followers||0); });
+  document.getElementById('followSyncStatus').innerText='Found '+list.length+' users';
+  let html=''; list.forEach(u=>{ const ph=u.phone; const name=u.name||ph; const prof=u.profile||{}; const st={ followers: Math.max(prof.followers||prof.follows||0, u.stats?.followers||0)}; const photo=prof.photo||'https://cdn-icons-png.flaticon.com/512/149/149071.png'; const isOwn=ph===curPhone; const isAdmin=ph===ADMIN_PHONE; const followed=loadFollowedUsers().includes(ph); html+='<div class="card p-3 flex gap-3 items-center '+(isAdmin?'gold':'')+'"><img src="'+photo+'" class="w-12 h-12 rounded-full object-cover"><div class="flex-1"><p class="font-bold text-xs">'+name+' '+(isAdmin?'<span class="bg-[#ffeb00] text-black text-[8px] px-1 rounded">ADMIN</span>':'')+'</p><p class="text-[9px] text-gray-500">'+ph+'</p><p class="text-[10px] mt-1">Follows <b class="text-yellow-400">'+st.followers+'</b></p></div><div class="flex flex-col gap-1">'+(isOwn?'': '<button onclick="toggleFollow(\''+ph+'\')" class="'+(followed?'bg-green-600':'bg-[#ffeb00]')+' text-black px-3 py-1 rounded-full text-[10px] font-bold">'+(followed?'Following':'Follow')+'</button>')+'</div></div>'; });
+  document.getElementById('followList').innerHTML=html||'<p class="text-xs text-gray-500">No users</p>';
+};
+window.toggleFollow=async(phone)=>{ let f=loadFollowedUsers(); let pr=loadProfiles(); if(f.includes(phone)){ f=f.filter(p=>p!==phone); saveFollowedUsers(f); if(pr[phone]){pr[phone].followers=Math.max(0,(pr[phone].followers||1)-1); saveProfiles(pr);} } else { f.push(phone); saveFollowedUsers(f); if(!pr[phone]) pr[phone]={}; pr[phone].followers=(pr[phone].followers||0)+1; saveProfiles(pr);} loadFollowPage(); };
+window.tab=(name)=>{
+  document.querySelectorAll('[id^="c-"]').forEach(el=>el.classList.add('hidden'));
+  document.getElementById('c-'+name)?.classList.remove('hidden');
+  document.querySelectorAll('[id^="tab-"]').forEach(b=>{b.classList.remove('tab-active'); b.classList.add('text-gray-500');});
+  document.getElementById('tab-'+name)?.classList.add('tab-active');
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('text-[#ffeb00]'));
+  const tb=document.querySelector('nav button[onclick="tab(\''+name+'\')"]'); if(tb)tb.classList.add('text-[#ffeb00]');
+  if(name==='follow')loadFollowPage();
+  if(name==='sell'){loadSellersList(); loadTxHistory();}
+  if(name==='admin' && isAdminUnlocked) loadAdminLists();
+};
+window.loadSellersList=()=>{ const sellers=loadSellers(); const el=document.getElementById('approvedSellersView'); if(!el)return; if(sellers.length===0){el.innerHTML='<p class="text-[10px] text-gray-500">No sellers</p>'; return;} let h='<p class="font-bold text-xs">Approved Sellers</p>'; sellers.forEach(s=>{h+='<div class="bg-[#222] p-2 rounded mt-1 text-[10px]">'+s.phone+' - '+s.name+'</div>';}); el.innerHTML=h; };
+window.loadTxHistory=()=>{ const tx=loadTx().filter(t=>t.from===curPhone||t.to===curPhone); const el=document.getElementById('txHistory'); if(!el)return; let h='<p class="font-bold text-xs">My History</p>'; h+=tx.slice(-20).reverse().map(t=>'<div class="bg-[#222] p-1 rounded mt-1 text-[9px]">'+t.from+' -> '+t.to+' '+t.amount+' MESH</div>').join('')||'<p class="text-[9px] text-gray-500">No tx</p>'; el.innerHTML=h; };
+document.getElementById('btnLogin')?.addEventListener('click',async()=>{
+  const ph=document.getElementById('ph').value.trim().replace(/\s/g,''); const name=document.getElementById('nm').value.trim(); const pwd=document.getElementById('pwd').value.trim(); const pwdConfirm=document.getElementById('pwdConfirm').value.trim(); const statusEl=document.getElementById('status');
+  if(!ph||!pwd){statusEl.innerText='Phone + Password needed';return;} statusEl.innerText='Checking...'; 
+  let users=loadUsers(); let found=users.find(u=>u.phone===ph); const blocked=loadBlocked(); if(blocked.includes(ph)){statusEl.innerText='Blocked';return;}
+  try{ const remoteSnap=await getDoc(doc(db,'users',ph)); if(remoteSnap.exists()){ const rd=remoteSnap.data(); if(rd.blocked){statusEl.innerText='Blocked by Admin';return;} if(!found){found={phone:ph,name:rd.name||name||ph,password:rd.password||pwd,balance:rd.balance||0}; users.push(found); saveUsers(users);} } }catch(e){}
+  if(found){ if(found.password!==pwd){statusEl.innerText='Wrong password';return;} cur=found; curPhone=ph; BAL=found.balance||0; setLS('mesh_current',cur); statusEl.innerText='Login OK'; startApp(); }
+  else { if(!name){statusEl.innerText='New user: enter Full Name';return;} if(pwd!==pwdConfirm){statusEl.innerText='Passwords not match';return;} const newUser={phone:ph,name:name,password:pwd,balance:100}; users.push(newUser); saveUsers(users); cur=newUser; curPhone=ph; BAL=100; setLS('mesh_current',newUser); try{await setDoc(doc(db,'users',ph),{phone:ph,name:name,balance:100,created:serverTimestamp()},{merge:true});}catch(e){} statusEl.innerText='Registered 100 MESH bonus'; startApp(); }
+});
+window.openForgotPassword=()=>{document.getElementById('forgotModal').classList.remove('hidden');};
+window.doForgotPassword=async()=>{ const ph=document.getElementById('forgotPhone').value.trim(); const np=document.getElementById('forgotNewPass').value.trim(); const cp=document.getElementById('forgotConfirmPass').value.trim(); const st=document.getElementById('forgotStatus'); if(!ph||!np){st.innerText='Phone + new pass needed';return;} if(np!==cp){st.innerText='Passwords not match';return;} let users=loadUsers(); let f=users.find(u=>u.phone===ph); if(!f){st.innerText='Phone not found';return;} f.password=np; saveUsers(users); try{await setDoc(doc(db,'users',ph),{password:np},{merge:true}); st.innerText='Password reset';}catch(e){st.innerText='Reset OK local';} };
+window.requestUnblock=async()=>{ const ph=document.getElementById('ph').value.trim()||prompt('Enter blocked phone:'); if(!ph)return; try{await addDoc(collection(db,'unblockRequests'),{phone:ph,time:serverTimestamp()}); alert('Unblock request sent');}catch(e){alert('Request failed');} };
+function startApp(){
+  try{
+    document.getElementById('loginDiv').classList.add('hidden'); document.getElementById('walletHeader').classList.remove('hidden'); document.getElementById('tabs').classList.remove('hidden'); document.getElementById('c-wallet').classList.remove('hidden');
+    var s=document.getElementById('splash'); if(s){s.classList.add('hide'); setTimeout(function(){s.style.display='none';},600);}
+    refreshWallet(); loadWallet(); render('mining','miningList'); render('viral','viralList'); render('market','marketList'); render('news','newsList'); render('social','socialList'); loadFollowPage(); loadSellersList(); loadTxHistory(); updateAdminUI();
+    const profiles=loadProfiles(); const my=profiles[curPhone]; if(my && my.photo){ const hp=document.getElementById('myProfilePic'); if(hp)hp.src=my.photo; }
+  }catch(e){ var s=document.getElementById('splash'); if(s){s.style.display='none';} }
+}
+window.addEventListener('load',()=>{ setTimeout(()=>{ var s=document.getElementById('splash'); if(s){s.classList.add('hide'); setTimeout(()=>{s.style.display='none';},500);} if(cur){try{startApp();}catch(e){}} },1500); });
+const adminContent=document.getElementById('ac'); if(adminContent){ adminContent.style.display='none'; }
+document.getElementById('btnUnlock')?.addEventListener('click',()=>{
+  const pass=document.getElementById('apass').value.trim();
+  if(pass==='MESH2025' || pass==='mcb2024' || pass==='Dollar@123' || pass==='admin123'){
+    isAdminUnlocked=true;
+    if(adminContent) adminContent.style.display='block';
+    // RESTORED ADD MESH BLOCK - same style as your old app
+    document.getElementById('ac').innerHTML='<div class="bg-[#111] border border-[#ffeb00] p-3 rounded-xl mb-3"><p class="font-bold text-xs text-[#ffeb00]">ADD MESH (Admin)</p><div class="flex gap-2 mt-2"><input id="addMeshPhone" placeholder="User phone e.g 077..." class="flex-1 bg-[#222] p-2 rounded text-xs"><input id="addMeshAmount" type="number" placeholder="Amount" class="w-24 bg-[#222] p-2 rounded text-xs"></div><button onclick="addMeshToUser()" class="w-full bg-[#ffeb00] text-black py-2 rounded-full text-xs font-bold mt-2">Add MESH to User</button><p id="addMeshStatus" class="text-[9px] text-gray-500 mt-1"></p></div><div class="mt-3"><p class="font-bold text-xs">Sell Requests</p><div id="sellRequests"></div><p class="font-bold text-xs mt-3">Unblock Requests</p><div id="unblockRequests"></div><div id="adminUsers"></div></div>';
+    loadAdminListsFull();
+  } else { alert('Wrong password'); isAdminUnlocked=false; if(adminContent) adminContent.style.display='none'; }
+});
+window.addMeshToUser=async()=>{
+  const ph=document.getElementById('addMeshPhone').value.trim(); const amt=Number(document.getElementById('addMeshAmount').value); const st=document.getElementById('addMeshStatus');
+  if(!ph||!amt){if(st)st.innerText='Phone + amount needed';return;}
+  try{
+    let users=loadUsers(); let u=users.find(x=>x.phone===ph);
+    if(u){u.balance=(u.balance||0)+amt; saveUsers(users);}
+    await setDoc(doc(db,'users',ph),{balance:increment(amt)},{merge:true});
+    if(st)st.innerText='Added '+amt+' MESH to '+ph;
+    if(ph===curPhone){ BAL+=amt; refreshWallet(); setLS('mesh_current',{...cur,balance:BAL}); }
+    document.getElementById('addMeshPhone').value=''; document.getElementById('addMeshAmount').value='';
+    alert('Added '+amt+' to '+ph);
+  }catch(e){ if(st)st.innerText='Failed: '+e.message; }
+};
+async function loadAdminListsFull(){
+  try{
+    onSnapshot(collection(db,'sellRequests'),snap=>{ let h=''; snap.forEach(d=>{ const data=d.data(); h+='<div class="bg-[#222] p-2 rounded mt-1 text-[10px] flex justify-between"><span>'+(data.fromPhone||'')+' -> '+(data.toPhone||'')+' '+ (data.amount||0)+' MESH</span><button onclick="approveSell(\''+d.id+'\')" class="bg-[#ffeb00] text-black px-2 py-1 rounded-full text-[9px]">Approve</button></div>';}); const el=document.getElementById('sellRequests'); if(el) el.innerHTML=h||'<p class="text-[9px] text-gray-500">No sell requests</p>';});
+    onSnapshot(collection(db,'unblockRequests'),snap=>{ let h=''; snap.forEach(d=>{ const data=d.data(); h+='<div class="bg-[#222] p-2 rounded mt-1 text-[10px] flex justify-between"><span>'+(data.phone||'')+'</span><button onclick="unblockUser(\''+(data.phone||'')+'\')" class="bg-green-700 text-white px-2 py-1 rounded-full text-[9px]">Unblock</button></div>';}); const el=document.getElementById('unblockRequests'); if(el) el.innerHTML=h||'<p class="text-[9px] text-gray-500">None</p>';});
+  }catch(e){}
+  const users=loadUsers(); let hh='<p class="font-bold text-xs mt-3">All Users ('+users.length+')</p>'; users.forEach(u=>{ hh+='<div class="flex justify-between bg-[#222] p-2 rounded mt-1 text-[10px]"><span>'+(u.name||'User')+' '+u.phone+' '+ (u.balance||0)+' MESH</span><span><button onclick="blockUser(\''+u.phone+'\')" class="text-red-400 mr-2">Block</button></span></div>'; }); const au=document.getElementById('adminUsers'); if(au) au.innerHTML=hh;
+}
+window.approveSell=async(id)=>{
+  try{ const ref=doc(db,'sellRequests',id); const snap=await getDoc(ref); if(!snap.exists()){alert('Not found');return;} const data=snap.data(); const fromPh=data.fromPhone; const toPh=data.toPhone; const amt=Number(data.amount||0); let users=loadUsers(); let fromU=users.find(u=>u.phone===fromPh); if(!fromU||(fromU.balance||0)<amt){alert('Seller low balance');return;} fromU.balance-=amt; let toU=users.find(u=>u.phone===toPh); if(toU){toU.balance=(toU.balance||0)+amt;} else {users.push({phone:toPh,name:toPh,password:'1234',balance:amt});} saveUsers(users); let tx=loadTx(); tx.push({from:fromPh,to:toPh,amount:amt,time:Date.now()}); saveTx(tx); try{ await setDoc(doc(db,'users',fromPh),{balance:fromU.balance},{merge:true}); await setDoc(doc(db,'users',toPh),{balance:toU?toU.balance:amt},{merge:true}); await deleteDoc(ref);}catch(e){} alert('Approved'); }catch(e){alert(e.message);}
+};
+document.getElementById('btnBecomeSeller')?.addEventListener('click',()=>{ let sellers=loadSellers(); if(sellers.find(s=>s.phone===curPhone)){alert('Already seller');return;} sellers.push({phone:curPhone,name:cur.name,time:Date.now()}); saveSellers(sellers); alert('You are now seller'); loadSellersList(); });
+document.getElementById('btnSellMesh')?.addEventListener('click',()=>{tab('sell');});
+document.getElementById('btnDoSell')?.addEventListener('click',async()=>{ const buyer=document.getElementById('buyerPhone').value.trim(); const amt=Number(document.getElementById('sellAmount').value); if(!buyer||!amt){alert('Buyer + amount needed');return;} if((BAL||0)<amt){alert('Low balance');return;} const st=document.getElementById('sellStatus'); st.innerText='Requesting...'; try{ await addDoc(collection(db,'sellRequests'),{fromPhone:curPhone,toPhone:buyer,amount:amt,fromName:cur.name,time:serverTimestamp()}); st.innerText='Sell request sent'; document.getElementById('buyerPhone').value=''; document.getElementById('sellAmount').value=''; }catch(e){st.innerText='Failed: '+e.message;} });
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',(e)=>{ e.preventDefault(); deferredPrompt=e; showInstallBanner(); });
+function showInstallBanner(){ const b=document.getElementById('installBanner'); if(b){ b.classList.remove('hidden'); b.style.display='flex'; setTimeout(()=>{b.style.display='flex'; b.classList.remove('hidden');},500);} }
+setTimeout(()=>{ showInstallBanner(); },2000);
+window.installApp=async()=>{ 
+  if(deferredPrompt){ 
+    deferredPrompt.prompt(); 
+    const c=await deferredPrompt.userChoice; 
+    if(c.outcome==='accepted'){document.getElementById('installBanner').style.display='none';} 
+    deferredPrompt=null; 
+  } else { 
+    if(window.matchMedia('(display-mode: standalone)').matches){
+      alert('Already installed!');
+      document.getElementById('installBanner').style.display='none';
+    } else {
+      alert('To install: Chrome menu (3 dots) > Add to Home screen > Install MCB Connect');
+      document.getElementById('installBanner').style.display='none';
+    }
+  } 
+};
+if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(()=>{}); }); }
+</script><div id="installBanner" class="hidden fixed bottom-[70px] left-3 right-3 bg-[#ffeb00] text-black p-3 rounded-xl z-50 justify-between items-center shadow-xl border-2 border-black"><div class="flex gap-2 items-center"><img src="./icon-192.png" onerror="this.src='./icon-512.png'" style="width:32px;height:32px;border-radius:8px;background:#000"><div><p class="font-black text-xs">Install MCB Connect App</p><p class="text-[10px]">Tap Install - instant install</p></div></div><div class="flex gap-2"><button onclick="installApp()" class="bg-black text-[#ffeb00] px-5 py-2 rounded-full text-xs font-black">Install</button><button onclick="document.getElementById('installBanner').style.display='none'" class="bg-white text-black px-2 py-2 rounded-full text-[10px]">X</button></div></div><nav class="fixed bottom-0 left-0 right-0 bg-[#0a0a0a] border-t border-[#222] flex justify-around py-2 z-40 text-[10px]"><button onclick="tab('wallet')" id="tab-wallet" class="flex flex-col items-center text-[#ffeb00] tab-active"><i class="fa-solid fa-wallet"></i><span>Wallet</span></button><button onclick="tab('follow')" id="tab-follow" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-users"></i><span>Follow</span></button><button onclick="tab('mining')" id="tab-mining" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-hammer"></i><span>Mining</span></button><button onclick="tab('sell')" id="tab-sell" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-store"></i><span>Sell</span></button><button onclick="tab('admin')" id="tab-admin" class="flex flex-col items-center text-gray-500"><i class="fa-solid fa-lock"></i><span>Admin</span></button></nav></body></html>
